@@ -1,0 +1,50 @@
+# Documentation of how to deploy to GAE: https://support.atlassian.com/bitbucket-cloud/docs/deploy-to-google-cloud/
+
+# Variables (starting with $) are defined in the bitbucket settings: Repository Settings > Pipelines > Repository Variables
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: Build and test backend
+          image: python:3.7
+          script:
+            - pip install -r backend/requirements.txt
+            - python -m pytest backend/tests/
+      - step:
+          name: Build and test frontend
+          image: node:12.13.0
+          script:
+            - cd frontend
+            - npm install -S
+            - npm run build
+    master:
+      - step:
+          name: Build backend
+          image: python:3.7
+          script:
+            - pip install -r backend/requirements.txt
+            - python -m pytest backend/tests/
+      - step:
+          name: Build frontend
+          image: node:12.13.0
+          caches:
+            - node
+          script:
+            - cd frontend
+            - npm install
+            - npm run build
+          artifacts:
+            - frontend/build/**
+      - step:
+          name: Deploy
+          script:
+            - pipe: atlassian/google-app-engine-deploy:0.7.4
+              variables:
+                KEY_FILE: $PROD_KEY
+                PROJECT: $PROD_PROJECT
+                DEPLOYABLES: $PROD_DEPLOYABLES
+                VERSION: '1-${BITBUCKET_BUILD_NUMBER}'
+                PROMOTE: 'true'
+                STOP_PREVIOUS_VERSION: 'true'
+                EXTRA_ARGS: '--verbosity=debug'

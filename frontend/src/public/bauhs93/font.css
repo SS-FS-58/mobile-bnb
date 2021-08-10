@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'BAUHS93';
+	src: url('./BAUHS93.eot');
+	src: local('BAUHS93'), url('./BAUHS93.woff') format('woff'), url('./BAUHS93.ttf') format('truetype');
+}
+/* use this class to attach this font to any element i.e. <p class="fontsforweb_fontid_2802">Text with this font applied</p> */
+.fontsforweb_fontid_2802 {
+	font-family: 'BAUHS93' !important;
+}
+
+/* Font downloaded from FontsForWeb.com */
